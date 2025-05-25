@@ -1,4 +1,4 @@
-import openai
+from openai import OpenAI
 import os
 from PyPDF2 import PdfReader
 from langdetect import detect
@@ -7,6 +7,9 @@ import traceback
 
 # Load environment variables
 load_dotenv()
+
+# Initialize OpenAI client properly for v1+
+client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 # Logging functions
 def record_user_details(email, name="Not provided", notes="Not provided"):
@@ -21,7 +24,6 @@ def record_unknown_question(question):
 
 class Me:
     def __init__(self):
-        openai.api_key = os.getenv("OPENAI_API_KEY")
         self.name = "Alaa Allam"
         self.user_email = None
 
@@ -66,12 +68,12 @@ Always ask for the user's email if it's not provided yet.
         messages.append({"role": "user", "content": message})
 
         try:
-            response = openai.ChatCompletion.create(
+            response = client.chat.completions.create(
                 model="gpt-4",
                 messages=messages,
                 temperature=0.7,
             )
-            reply = response["choices"][0]["message"]["content"]
+            reply = response.choices[0].message.content
 
             if any(phrase in reply.lower() for phrase in ["i don't know", "i'm not sure", "i cannot answer"]):
                 record_unknown_question(message)
