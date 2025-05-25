@@ -1,17 +1,13 @@
-from openai import OpenAI 
 import os
+from openai import OpenAI
 from PyPDF2 import PdfReader
 from langdetect import detect
 from dotenv import load_dotenv
 import traceback
 
-# Load environment variables
+# Load .env
 load_dotenv()
 
-# Initialize OpenAI client properly for v1+
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
-
-# Logging functions
 def record_user_details(email, name="Not provided", notes="Not provided"):
     os.makedirs("logs", exist_ok=True)
     with open("logs/emails.txt", "a", encoding="utf-8") as f:
@@ -28,7 +24,7 @@ class Me:
         self.name = "Alaa Allam"
         self.user_email = None
 
-        # Load CV content
+        # Load LinkedIn PDF
         try:
             reader = PdfReader("me/linkedin.pdf")
             self.linkedin = "".join([p.extract_text() for p in reader.pages if p.extract_text()])
@@ -36,7 +32,7 @@ class Me:
             print(f"[ERROR] Reading CV: {e}")
             self.linkedin = "[LinkedIn resume could not be loaded]"
 
-        # Load summary
+        # Load Summary Text
         try:
             with open("me/summary.txt", "r", encoding="utf-8") as f:
                 self.summary = f.read()
@@ -72,11 +68,11 @@ Always ask for the user's email if it's not provided yet.
             response = self.client.chat.completions.create(
                 model="gpt-4",
                 messages=messages,
-                temperature=0.7,
+                temperature=0.7
             )
             reply = response.choices[0].message.content
 
-            if any(phrase in reply.lower() for phrase in ["i don't know", "i'm not sure", "i cannot answer"]):
+            if any(x in reply.lower() for x in ["i don't know", "i'm not sure", "i cannot answer"]):
                 record_unknown_question(message)
 
             if not self.user_email and "@" not in message:
