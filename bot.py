@@ -8,6 +8,8 @@ import traceback
 # Load .env
 load_dotenv()
 
+print("OPENAI_API_KEY:", os.getenv("OPENAI_API_KEY"))  # Add this line at the top
+
 def record_user_details(email, name="Not provided", notes="Not provided"):
     os.makedirs("logs", exist_ok=True)
     with open("logs/emails.txt", "a", encoding="utf-8") as f:
