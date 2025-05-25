@@ -2,3 +2,4 @@ gradio==4.44.1
 openai
 PyPDF2
 langdetect
+python-dotenv
