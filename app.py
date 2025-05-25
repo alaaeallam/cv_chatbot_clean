@@ -24,4 +24,4 @@ with gr.Blocks(title="Alaa Allam - CV Assistant") as demo:
     msg.submit(respond, [msg, state], [chatbot, state, msg])
 
 # Launch with public share URL
-demo.launch(share=True)
+demo.launch()
