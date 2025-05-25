@@ -1,23 +1,20 @@
 import openai
 import os
-import json
 from PyPDF2 import PdfReader
 from langdetect import detect
 from dotenv import load_dotenv
 import traceback
 
-# Load environment variables from .env file
+# Load environment variables
 load_dotenv()
 
 # Logging functions
 def record_user_details(email, name="Not provided", notes="Not provided"):
-    print(f"[INFO] Captured user: {name} | Email: {email} | Notes: {notes}")
     os.makedirs("logs", exist_ok=True)
     with open("logs/emails.txt", "a", encoding="utf-8") as f:
         f.write(f"{email}, {name}, {notes}\n")
 
 def record_unknown_question(question):
-    print(f"[WARN] Unanswered question: {question}")
     os.makedirs("logs", exist_ok=True)
     with open("logs/unanswered.txt", "a", encoding="utf-8") as f:
         f.write(question + "\n")
@@ -29,24 +26,23 @@ class Me:
         self.user_email = None
 
         # Load CV content
-        self.linkedin = "[LinkedIn resume could not be loaded]"
         try:
             reader = PdfReader("me/linkedin.pdf")
             self.linkedin = "".join([p.extract_text() for p in reader.pages if p.extract_text()])
         except Exception as e:
-            print(f"[ERROR] Failed to load CV: {e}")
+            print(f"[ERROR] Reading CV: {e}")
+            self.linkedin = "[LinkedIn resume could not be loaded]"
 
         # Load summary
-        self.summary = "[Summary could not be loaded]"
         try:
             with open("me/summary.txt", "r", encoding="utf-8") as f:
                 self.summary = f.read()
         except Exception as e:
-            print(f"[ERROR] Failed to load summary: {e}")
+            print(f"[ERROR] Reading summary: {e}")
+            self.summary = "[Summary could not be loaded]"
 
     def system_prompt(self):
         return f"""You are acting as {self.name}. You are answering professionally as if you're {self.name}.
-Use this background info to guide your responses.
 
 ## Summary:
 {self.summary}
@@ -60,7 +56,7 @@ Always ask for the user's email if it's not provided yet.
     def chat(self, message, history):
         try:
             lang = detect(message)
-        except Exception:
+        except:
             lang = "en"
 
         messages = [{"role": "system", "content": self.system_prompt()}]
@@ -73,7 +69,7 @@ Always ask for the user's email if it's not provided yet.
             response = openai.ChatCompletion.create(
                 model="gpt-4",
                 messages=messages,
-                temperature=0.7
+                temperature=0.7,
             )
             reply = response["choices"][0]["message"]["content"]
 
