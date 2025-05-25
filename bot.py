@@ -1,4 +1,4 @@
-from openai import OpenAI
+from openai import OpenAI 
 import os
 from PyPDF2 import PdfReader
 from langdetect import detect
@@ -24,6 +24,7 @@ def record_unknown_question(question):
 
 class Me:
     def __init__(self):
+        self.client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
         self.name = "Alaa Allam"
         self.user_email = None
 
@@ -68,7 +69,7 @@ Always ask for the user's email if it's not provided yet.
         messages.append({"role": "user", "content": message})
 
         try:
-            response = client.chat.completions.create(
+            response = self.client.chat.completions.create(
                 model="gpt-4",
                 messages=messages,
                 temperature=0.7,
