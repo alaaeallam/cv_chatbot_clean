@@ -4,4 +4,3 @@ langdetect==1.0.9
 python-dotenv==1.0.1
 PyPDF2==3.0.1
 fastapi==0.110.0
-pydantic==1.10.13
