@@ -1,5 +1,6 @@
 import gradio as gr
 from bot import Me
+import os
 
 me = Me()
 
@@ -24,4 +25,5 @@ with gr.Blocks(title="Alaa Allam - CV Assistant") as demo:
     msg.submit(respond, [msg, state], [chatbot, state, msg])
 
 # Launch with public share URL
-demo.launch()
+port = int(os.environ.get("PORT", 7860))
+demo.launch(server_name="0.0.0.0", server_port=port)
