@@ -1,5 +1,5 @@
+import openai
 import os
-from openai import OpenAI
 from PyPDF2 import PdfReader
 from langdetect import detect
 from dotenv import load_dotenv
@@ -20,11 +20,10 @@ def record_unknown_question(question):
 
 class Me:
     def __init__(self):
-        self.client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+        openai.api_key = os.getenv("OPENAI_API_KEY")
         self.name = "Alaa Allam"
         self.user_email = None
 
-        # Load LinkedIn PDF
         try:
             reader = PdfReader("me/linkedin.pdf")
             self.linkedin = "".join([p.extract_text() for p in reader.pages if p.extract_text()])
@@ -32,7 +31,6 @@ class Me:
             print(f"[ERROR] Reading CV: {e}")
             self.linkedin = "[LinkedIn resume could not be loaded]"
 
-        # Load Summary Text
         try:
             with open("me/summary.txt", "r", encoding="utf-8") as f:
                 self.summary = f.read()
@@ -65,7 +63,7 @@ Always ask for the user's email if it's not provided yet.
         messages.append({"role": "user", "content": message})
 
         try:
-            response = self.client.chat.completions.create(
+            response = openai.ChatCompletion.create(
                 model="gpt-4",
                 messages=messages,
                 temperature=0.7
